@@ -1,6 +1,8 @@
 # Quantum Mechanical Keyboard Firmware
 
-[![Build Status](https://travis-ci.org/jackhumbert/qmk_firmware.svg?branch=master)](https://travis-ci.org/jackhumbert/qmk_firmware)
+[![wercker status](https://app.wercker.com/status/de1502404a8029507a546d0f21cd7938/m/ "wercker status")](https://app.wercker.com/project/byKey/de1502404a8029507a546d0f21cd7938)  
+[ ![Download](https://api.bintray.com/packages/yuukigoodman/generic/ergodox.hex/images/download.svg) ](https://bintray.com/yuukigoodman/generic/ergodox.hex/_latestVersion)  
+
 
 This is a keyboard firmware based on the [tmk_keyboard firmware](http://github.com/tmk/tmk_keyboard) with some useful features for Atmel AVR controllers, and more specifically, the [OLKB product line](http://olkb.com), the [ErgoDox EZ](http://www.ergodox-ez.com) keyboard, and the [Clueboard product line](http://clueboard.co/).
 
@@ -106,7 +108,7 @@ In every keymap folder, the following files are recommended:
 * `config.h` - the options to configure your keymap
 * `keymap.c` - all of your keymap code, required
 * `Makefile` - the features of QMK that are enabled, required to run `make` in your keymap folder
-* `readme.md` - a description of your keymap, how others might use it, and explanations of features 
+* `readme.md` - a description of your keymap, how others might use it, and explanations of features
 
 ## The `make` command
 
@@ -321,7 +323,7 @@ We've added shortcuts to make common modifier/tap (mod-tap) mappings more compac
 
 Steve Losh [described](http://stevelosh.com/blog/2012/10/a-modern-space-cadet/) the Space Cadet Shift quite well. Essentially, you hit the left Shift on its own, and you get an opening parenthesis; hit the right Shift on its own, and you get the closing one. When hit with other keys, the Shift key keeps working as it always does. Yes, it's as cool as it sounds.
 
-To use it, use `KC_LSPO` (Left Shift, Parens Open) for your left Shift on your keymap, and `KC_RSPC` (Right Shift, Parens Close) for your right Shift. 
+To use it, use `KC_LSPO` (Left Shift, Parens Open) for your left Shift on your keymap, and `KC_RSPC` (Right Shift, Parens Close) for your right Shift.
 
 It's defaulted to work on US keyboards, but if your layout uses different keys for parenthesis, you can define those in your `config.h` like this:
 
@@ -418,11 +420,11 @@ For the sake of flexibility, tap-dance actions can be either a pair of keycodes,
 
 ### Examples
 
-Here's a simple example for a single definition: 
+Here's a simple example for a single definition:
 
 1. In your `makefile`, add `TAP_DANCE_ENABLE = yes`
 2. In your `config.h` (which you can copy from `qmk_firmware/keyboards/planck/config.h` to your keymap directory), add `#define TAPPING_TERM 200`
-3. In your `keymap.c` file, define the variables and definitions, then add to your keymap: 
+3. In your `keymap.c` file, define the variables and definitions, then add to your keymap:
 
 ```c
 //Tap Dance Declarations
@@ -438,10 +440,10 @@ const qk_tap_dance_action_t tap_dance_actions[] = {
 };
 
 //In Layer declaration, add tap dance item in place of a key code
-TD(TD_ESC_CAPS) 
+TD(TD_ESC_CAPS)
 ```
 
-Here's a more complex example involving custom actions: 
+Here's a more complex example involving custom actions:
 
 ```c
 enum {
@@ -884,7 +886,7 @@ For this mod, you need an unused pin wiring to DI of WS2812 strip. After wiring 
 In order to use the underglow timer functions, you need to have `#define RGBLIGHT_TIMER` in your `config.h`, and have audio disabled (`AUDIO_ENABLE = no` in your Makefile).
 
 Please add the following options into your config.h, and set them up according your hardware configuration. These settings are for the `F4` pin by default:
-    
+
     #define RGB_DI_PIN F4     // The pin your RGB strip is wired to
     #define RGBLIGHT_TIMER    // Require for fancier stuff (not compatible with audio)
     #define RGBLED_NUM 14     // Number of LEDs
@@ -931,13 +933,13 @@ If your keyboard is running an Atmega chip (atmega32u4 and others), it's pretty 
 
 The `USB Device descriptor parameter` block contains parameters are used to uniquely identify your keyboard, but they don't really matter to the machine.
 
-Your `MATRIX_ROWS` and `MATRIX_COLS` are the numbers of rows and cols in your keyboard matrix - this may be different than the number of actual rows and columns on your keyboard. There are some tricks you can pull to increase the number of keys in a given matrix, but most keyboards are pretty straight-forward. 
+Your `MATRIX_ROWS` and `MATRIX_COLS` are the numbers of rows and cols in your keyboard matrix - this may be different than the number of actual rows and columns on your keyboard. There are some tricks you can pull to increase the number of keys in a given matrix, but most keyboards are pretty straight-forward.
 
 The `MATRIX_ROW_PINS` and `MATRIX_COL_PINS` are the pins your MCU uses on each row/column. Your schematic (if you have one) will have this information on it, and the values will vary depending on your setup. This is one of the most important things to double-check in getting your keyboard setup correctly.
 
 For the `DIODE_DIRECTION`, most hand-wiring guides will instruct you to wire the diodes in the `COL2ROW` position, but it's possible that they are in the other - people coming from EasyAVR often use `ROW2COL`. Nothing will function if this is incorrect.
 
-`BACKLIGHT_PIN` is the pin that your PWM-controlled backlight (if one exists) is hooked-up to. Currently only B5, B6, and B7 are supported. 
+`BACKLIGHT_PIN` is the pin that your PWM-controlled backlight (if one exists) is hooked-up to. Currently only B5, B6, and B7 are supported.
 
 `BACKLIGHT_BREATHING` is a fancier backlight feature, and uses one of the timers.
 
