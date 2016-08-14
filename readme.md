@@ -1,7 +1,7 @@
 # Quantum Mechanical Keyboard Firmware
 
 [![wercker status](https://app.wercker.com/status/de1502404a8029507a546d0f21cd7938/m/ "wercker status")](https://app.wercker.com/project/byKey/de1502404a8029507a546d0f21cd7938)  
-[ ![Download](https://api.bintray.com/packages/yuukigoodman/generic/ergodox.hex/images/download.svg) ](https://bintray.com/yuukigoodman/generic/ergodox.hex/_latestVersion)  
+[![Download](https://api.bintray.com/packages/yuukigoodman/generic/ergodox.hex/images/download.svg) ](https://bintray.com/yuukigoodman/generic/ergodox.hex/_latestVersion)  
 
 
 This is a keyboard firmware based on the [tmk_keyboard firmware](http://github.com/tmk/tmk_keyboard) with some useful features for Atmel AVR controllers, and more specifically, the [OLKB product line](http://olkb.com), the [ErgoDox EZ](http://www.ergodox-ez.com) keyboard, and the [Clueboard product line](http://clueboard.co/).
