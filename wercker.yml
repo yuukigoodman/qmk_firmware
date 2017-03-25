@@ -11,7 +11,7 @@ build:
         name: build keymap.
         cwd: $WERCKER_SOURCE_DIR/keyboards/ergodox
         code: |
-          make clean && make keymap=$TARGET_KEYMAP
+          make clean && make keymap=$TARGET_KEYMAP SLEEP_LED_ENABLE=no
     - script:
         name: move built firmware to output dir.
         cwd: $WERCKER_SOURCE_DIR/keyboards/ergodox
