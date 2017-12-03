@@ -82,7 +82,7 @@ float tone_startup[][2] = {
 float tone_goodbye[][2] = SONG(GOODBYE_SOUND);
 float music_scale[][2]  = SONG(MUSIC_SCALE_SOUND);
 
-void persistant_default_layer_set(uint16_t default_layer) {
+void persistent_default_layer_set(uint16_t default_layer) {
   eeconfig_update_default_layer(default_layer);
   default_layer_set(default_layer);
 }
@@ -102,12 +102,12 @@ void matrix_init_user(void) {
 void startup_user()
 {
   _delay_ms(20); // gets rid of tick
-  PLAY_NOTE_ARRAY(tone_startup, false, 0);
+  PLAY_SONG(tone_startup);
 }
 
 void shutdown_user()
 {
-  PLAY_NOTE_ARRAY(tone_goodbye, false, 0);
+  PLAY_SONG(tone_goodbye);
   _delay_ms(150);
   stop_all_notes();
 }
@@ -119,11 +119,11 @@ void music_on_user(void)
 
 void music_scale_user(void)
 {
-  PLAY_NOTE_ARRAY(music_scale, false, 0);
+  PLAY_SONG(music_scale);
 }
 
 
-const qk_tap_dance_action_t tap_dance_actions[] = {
+qk_tap_dance_action_t tap_dance_actions[] = {
   //Tap once for equal, twice for hyper + X (alfred lock)
   [TD_EQ_LOCK] = ACTION_TAP_DANCE_DOUBLE(KC_EQL,  HYPR(KC_X)),
   //Tap once for minus, twice for time.heals.nothing

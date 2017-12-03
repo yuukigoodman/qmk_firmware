@@ -27,11 +27,26 @@
 #include "sleep_led.h"
 #include "led.h"
 #endif
+#include "wait.h"
+
+#ifdef NKRO_ENABLE
+  #include "keycode_config.h"
+
+  extern keymap_config_t keymap_config;
+#endif
 
 /* ---------------------------------------------------------
  *       Global interface variables and declarations
  * ---------------------------------------------------------
  */
+
+#ifndef usb_lld_connect_bus
+  #define usb_lld_connect_bus(usbp)
+#endif
+
+#ifndef usb_lld_disconnect_bus
+  #define usb_lld_disconnect_bus(usbp)
+#endif
 
 uint8_t keyboard_idle __attribute__((aligned(2))) = 0;
 uint8_t keyboard_protocol __attribute__((aligned(2))) = 1;
@@ -39,9 +54,6 @@ uint16_t keyboard_led_stats __attribute__((aligned(2))) = 0;
 volatile uint16_t keyboard_idle_count = 0;
 static virtual_timer_t keyboard_idle_timer;
 static void keyboard_idle_timer_cb(void *arg);
-#ifdef NKRO_ENABLE
-extern bool keyboard_nkro;
-#endif /* NKRO_ENABLE */
 
 report_keyboard_t keyboard_report_sent = {{0}};
 #ifdef MOUSE_ENABLE
@@ -134,7 +146,7 @@ static const uint8_t keyboard_hid_report_desc_data[] = {
   0x95, KBD_REPORT_KEYS,          //   Report Count (),
   0x75, 0x08,                //   Report Size (8),
   0x15, 0x00,                //   Logical Minimum (0),
-  0x25, 0xFF,                //   Logical Maximum(255),
+  0x26, 0xFF, 0x00,          //   Logical Maximum(255),
   0x05, 0x07,                //   Usage Page (Key Codes),
   0x19, 0x00,                //   Usage Minimum (0),
   0x29, 0xFF,                //   Usage Maximum (255),
@@ -943,8 +955,8 @@ static bool usb_request_hook_cb(USBDriver *usbp) {
         if((usbp->setup[4] == KBD_INTERFACE) && (usbp->setup[5] == 0)) {   /* wIndex */
           keyboard_protocol = ((usbp->setup[2]) != 0x00);   /* LSB(wValue) */
 #ifdef NKRO_ENABLE
-          keyboard_nkro = !!keyboard_protocol;
-          if(!keyboard_nkro && keyboard_idle) {
+          keymap_config.nkro = !!keyboard_protocol;
+          if(!keymap_config.nkro && keyboard_idle) {
 #else /* NKRO_ENABLE */
           if(keyboard_idle) {
 #endif /* NKRO_ENABLE */
@@ -962,7 +974,7 @@ static bool usb_request_hook_cb(USBDriver *usbp) {
         keyboard_idle = usbp->setup[3];     /* MSB(wValue) */
         /* arm the timer */
 #ifdef NKRO_ENABLE
-        if(!keyboard_nkro && keyboard_idle) {
+        if(!keymap_config.nkro && keyboard_idle) {
 #else /* NKRO_ENABLE */
         if(keyboard_idle) {
 #endif /* NKRO_ENABLE */
@@ -1014,7 +1026,7 @@ void init_usb_driver(USBDriver *usbp) {
    * after a reset.
    */
   usbDisconnectBus(usbp);
-  chThdSleepMilliseconds(1500);
+  wait_ms(1500);
   usbStart(usbp, &usbcfg);
   usbConnectBus(usbp);
 
@@ -1034,16 +1046,16 @@ void send_remote_wakeup(USBDriver *usbp) {
 #if defined(K20x) || defined(KL2x)
 #if KINETIS_USB_USE_USB0
   USB0->CTL |= USBx_CTL_RESUME;
-  chThdSleepMilliseconds(15);
+  wait_ms(15);
   USB0->CTL &= ~USBx_CTL_RESUME;
 #endif /* KINETIS_USB_USE_USB0 */
-#elif defined(STM32F0XX) || defined(STM32F1XX) /* K20x || KL2x */
+#elif defined(STM32F0XX) || defined(STM32F1XX) || defined(STM32F3XX) /* End K20x || KL2x */
   STM32_USB->CNTR |= CNTR_RESUME;
-  chThdSleepMilliseconds(15);
+  wait_ms(15);
   STM32_USB->CNTR &= ~CNTR_RESUME;
-#else /* STM32F0XX || STM32F1XX */
+#else /* End STM32F0XX || STM32F1XX || STM32F3XX */
 #warning Sending remote wakeup packet not implemented for your platform.
-#endif /* K20x || KL2x */
+#endif
 }
 
 /* ---------------------------------------------------------
@@ -1089,7 +1101,7 @@ static void keyboard_idle_timer_cb(void *arg) {
   }
 
 #ifdef NKRO_ENABLE
-  if(!keyboard_nkro && keyboard_idle) {
+  if(!keymap_config.nkro && keyboard_idle) {
 #else /* NKRO_ENABLE */
   if(keyboard_idle) {
 #endif /* NKRO_ENABLE */
@@ -1122,7 +1134,7 @@ void send_keyboard(report_keyboard_t *report) {
   osalSysUnlock();
 
 #ifdef NKRO_ENABLE
-  if(keyboard_nkro) {  /* NKRO protocol */
+  if(keymap_config.nkro) {  /* NKRO protocol */
     /* need to wait until the previous packet has made it through */
     /* can rewrite this using the synchronous API, then would wait
      * until *after* the packet has been transmitted. I think
